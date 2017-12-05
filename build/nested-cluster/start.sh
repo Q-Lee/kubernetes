@@ -27,7 +27,7 @@ start_kubelet ()
   mkdir -p /etc/srv/kubernetes
 
   # Change the kubelet to not fail with swap on.
-  sed -i 's/ExecStart=\/usr\/bin\/kubelet/ExecStart=\/usr\/bin\/kubelet --fail-swap-on=false/' /etc/systemd/system/kubelet.service.d/kubeadm-10.conf
+  sed -i 's/ExecStart=\/usr\/bin\/kubelet/ExecStart=\/usr\/bin\/kubelet --fail-swap-on=false/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
   systemctl enable kubelet
   systemctl start kubelet
 }
@@ -41,7 +41,7 @@ start_worker ()
   docker load -i /kube-proxy-amd64.tar
 
   # Start kubeadm.
-  /usr/bin/kubeadm join --token=abcdef.abcdefghijklmnop --skip-preflight-checks 172.18.0.2:6443 2>&1
+  /usr/bin/kubeadm join --token=abcdef.abcdefghijklmnop --skip-preflight-checks --discovery-token-unsafe-skip-ca-verification 172.18.0.2:6443 2>&1
 }
 
 start_master ()
@@ -90,7 +90,7 @@ mount --make-rshared /lib/modules/
 /bin/dockerd-entrypoint.sh &
 
 systemctl enable kubelet
-sed -i 's/ExecStart=\/usr\/bin\/kubelet/ExecStart=\/usr\/bin\/kubelet --fail-swap-on=false/' /etc/systemd/system/kubelet.service.d/kubeadm-10.conf
+sed -i 's/ExecStart=\/usr\/bin\/kubelet/ExecStart=\/usr\/bin\/kubelet --fail-swap-on=false/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 systemctl start kubelet
 
 # Start a new process to do work.
